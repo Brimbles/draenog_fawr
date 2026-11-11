@@ -6,6 +6,8 @@
 import { fetchPackage, hubNewcomers, hubCardUrl } from "./fwsc.js";
 import { SaveStore, packageHash, changedSectors, packSectors, exportSave, importSave } from "./persistence.js";
 import { tryOutOf, loadTryOut } from "./tryout.js";
+import { setupMiniLab } from "./minilab-ui.js";
+import { setupTape } from "./tape-ui.js";
 
 const CLOCKS = [60, 80, 100, 120, 160, 200, 240];
 // The device this page is for: the FM-1 (index.html) or the SMK-37 (smk37/index.html, <html
@@ -594,6 +596,9 @@ function midiMessage(e) {
   const d = e.data;
   if (!d.length || !node) return;
   const bytes = Array.from(d);
+  // the controller's knobs and pads as the FM-1's own panel (web/minilab.js), before the channel
+  // is rewritten: its map names the channels the controller sends on
+  if (board === 0 && miniLab.handle(bytes)) { midiBlink(bytes); return; }
   if (midiCh && bytes[0] >= 0x80 && bytes[0] < 0xf0) bytes[0] = (bytes[0] & 0xf0) | (midiCh - 1);
   if (board === 1) {
     // the SMK-37 has no MIDI in jack: notes C3..C6 play its keys (the velocity as the time between
@@ -612,12 +617,22 @@ function midiMessage(e) {
   } else {
     send({ type: "midi", bytes });
   }
+  midiBlink(bytes);
+}
+function midiBlink(bytes) {
   if (bytes[0] < 0xf8) {
     midiAct.classList.add("on");
     clearTimeout(midiActOff);
     midiActOff = setTimeout(() => midiAct.classList.remove("on"), 120);
   }
 }
+const miniLab = setupMiniLab({
+  turn: (enc, clicks) => turn(enc, clicks),
+  setPot: (v) => setPot(v),
+  getPot: () => pot,
+  setKey: (id, down) => { if (board === 0) setKey(id, down); },
+  forward: (bytes) => send({ type: "midi", bytes }),
+}, { stored, store });
 // listen to the wanted inputs only; the list follows devices coming and going
 function midiConnect() {
   if (!midi) return;
@@ -805,6 +820,8 @@ async function setLatency(l) {
   store("fm1.latency", l);
   // a larger buffer needs a new audio context: rebuild the graph, boot again
   node.port.onmessage = null;
+  tape?.stop();
+  tape?.detach();
   node.disconnect();
   running = null;
   await ac.close();
@@ -815,6 +832,8 @@ async function setLatency(l) {
 
 // ---------------------------------------------------------------- audio: start on a click
 let ac = null, last = null, bootSeq = 0, booting = 0;
+// the multitrack tape under the synth (the FM-1 page only)
+const tape = document.getElementById("tape") ? setupTape({ firmwareName: () => fw?.name || "" }) : null;
 
 let bootQueue = Promise.resolve(), running = null, requestId = 0;
 const sessions = new Map(), bootWaiters = new Map(), snapshotWaiters = new Map();
@@ -976,7 +995,8 @@ async function startAudio(auto = false) {
   }
   await ac.audioWorklet.addModule("worklet.js");
   node = new AudioWorkletNode(ac, "fm1", { numberOfInputs: 0, outputChannelCount: [2] });
-  node.connect(ac.destination);
+  // through the tape (web/tape.js) to the speakers; a page without one plays straight out
+  if (tape) await tape.attach(ac, node); else node.connect(ac.destination);
   node.port.onmessage = onWorklet;
   perf.reset();
   // Boot now waits for a worklet acknowledgement; let its thread run even on browsers

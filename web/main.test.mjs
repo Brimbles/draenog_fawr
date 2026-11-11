@@ -86,6 +86,9 @@ async function page(disk = storage(), initialSearch = '', selected = '', manualB
     matchMedia: () => ({ matches: false }), confirm: () => true,
     fetchPackage: async f => ({ bytes: new Uint8Array(960).fill(f.id === 'a' ? 1 : 2), url: f.package }),
     hubNewcomers: async () => [], hubCardUrl: id => `https://thefirmwarehub.com/#fw-${id}`,
+    // the MiniLab layer and the tape have tests of their own (minilab.test.mjs, tape.test.mjs);
+    // here the emulator's node plays straight out
+    setupMiniLab: () => ({ handle: () => false }), setupTape: () => null,
     ...persistence, ...tryout, SaveStore: class { constructor() { return disk; } }, ...extra };
   const source = readFileSync(new URL('./main.js', import.meta.url), 'utf8').replace(/^import .*;$/gm, '');
   const run = new Function(...Object.keys(environment), `return (async () => { ${source}\nreturn {

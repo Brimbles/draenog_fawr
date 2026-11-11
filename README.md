@@ -1,3 +1,44 @@
+# Draenog Fawr
+
+A fork of [joakimeriksson/fm1-emu](https://github.com/joakimeriksson/fm1-emu) (MIT): the M-VAVE
+FM-1 and its community firmwares in the browser, on a phone, tablet or computer, with two
+additions.
+
+- **An Arturia MiniLab mkII as the FM-1's front panel.** Pick it under *MIDI in* and tick
+  *Knobs and pads drive the FM-1 panel*. Its knobs turn the FM-1's own knobs and its pads press
+  the FM-1's buttons, so it works with every firmware, not only the ones that read MIDI
+  controllers. Keys, pitch bend, the mod strip and unmapped knobs still go to the firmware's
+  MIDI in. On the MiniLab's factory settings (memory 1):
+
+  | MiniLab | FM-1 |
+  |---|---|
+  | knob 1 (turn / push) | SELECT / EDIT |
+  | knob 9 (turn / push) | PRESETS / HOME |
+  | knobs 2–5 | K1–K4 |
+  | knob 6 | ALGORITHM |
+  | knob 7 | MASTER volume |
+  | knob 8, knobs 10–16 | MIDI in (for firmwares that read controllers) |
+  | pads 1–8 | FX, SCL, ENV, LFO, EDIT, GLO, OCT−, OCT+ |
+  | pads 9–16 | HOME, SAVE, ARP, SEQ, PLAY, REC, SELECT ◀, SELECT ▶ |
+
+  *Controller map* has **Learn** for any control and any MIDI controller. Set the knobs to
+  *Relative* in Arturia's MIDI Control Center for endless turning. Web MIDI needs Chrome, Edge
+  or Firefox (Android with a USB-OTG adapter works); Safari on iPad and iPhone has no Web MIDI,
+  so there the on-screen panel plays, or use a Web MIDI browser app.
+
+- **The tape: a small multitrack recorder.** Record what the synth plays, switch to another
+  firmware and record over it, then mix: mute, solo, volume and pan per track, a click and
+  count-in, latency compensation for parts played live, and *Clock the firmware* to send MIDI
+  Start and clock so a firmware's own sequencer plays in time with the tape. Export the mix or
+  any track as WAV, or import audio. Tracks are kept in the browser.
+
+  The code is in `web/minilab.js`, `web/minilab-ui.js`, `web/tape.js`, `web/tape-ui.js` and
+  `web/tape-worklet.js`, with tests beside them; the MIDI clock lives in `web/worklet.js`.
+
+The original project's README follows.
+
+---
+
 # FM-1 emulator
 
 The **M-VAVE FM-1** is a pocket FM synthesizer, and a small community writes its own firmwares
