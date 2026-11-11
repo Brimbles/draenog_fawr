@@ -99,11 +99,11 @@ export class MiniLab {
 
   setMap(map) { this.releaseAll(); this.map = map; this.last.clear(); this.toggles.clear(); this.gates.clear(); }
 
-  // the source mapped to a target (for the map's view)
-  sourceOf(targetId) {
-    for (const [src, m] of Object.entries(this.map)) if (m.target === targetId) return src;
-    return null;
+  // the sources mapped to a target (for the map's view; a button can have several)
+  sourcesOf(targetId) {
+    return Object.entries(this.map).filter(([, m]) => m.target === targetId).map(([src]) => src);
   }
+  sourceOf(targetId) { return this.sourcesOf(targetId)[0] ?? null; }
 
   // the next control moved (a controller, or a note pressed) is assigned to `targetId`
   learn(targetId, done) { this.learning = { target: targetId, done }; }

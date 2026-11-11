@@ -25,14 +25,14 @@ export function setupMiniLab(actions, { stored, store }) {
   function render() {
     body.replaceChildren();
     for (const t of TARGETS) {
-      const src = ml.sourceOf(t.id);
+      const srcs = ml.sourcesOf(t.id), src = srcs[0] ?? null;
       const tr = document.createElement("tr");
       const name = document.createElement("th");
       name.scope = "row";
       name.textContent = t.label;
       const from = document.createElement("td");
       from.className = "dim";
-      from.textContent = src ? srcLabel(src) : "—";
+      from.replaceChildren(...(srcs.length ? srcs.map((x) => { const d = document.createElement("div"); d.textContent = srcLabel(x); return d; }) : ["—"]));
       const acts = document.createElement("td");
       acts.className = "acts";
       if (src && (t.kind === "enc" || t.kind === "pot")) {

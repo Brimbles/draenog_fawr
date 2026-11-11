@@ -176,3 +176,8 @@ test("panic sends all notes off on every channel", () => {
   assert.equal(log.length, 32);
   assert.deepEqual(log[0], ["fwd", 0xb0, 123, 0]);
 });
+
+test("a button pressed from two controls lists both", () => {
+  const { ml } = rig();
+  assert.deepEqual(ml.sourcesOf("btn:6").sort(), [ccSrc(1, 113), noteSrc(10, 40)].sort());
+});
