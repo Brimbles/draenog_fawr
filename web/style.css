@@ -203,6 +203,64 @@ section li { margin: 4px 0; }
 .article details[open] { padding-bottom: 4px; }
 .article summary { cursor: pointer; padding: 10px 0; font-weight: 600; color: var(--ink); }
 
+/* ---------------------------------------------------------------- the MiniLab layer (minilab-ui.js) */
+.box > label.check, label.check { display: flex; justify-content: flex-start; align-items: center; gap: 8px;
+  color: var(--text); font-size: 14px; cursor: pointer; }
+label.check input { accent-color: var(--amber); width: 16px; height: 16px; margin: 0; flex: none; }
+.ml-map summary { cursor: pointer; color: var(--dim); font-size: 14px; }
+.ml-map p { font-size: 13px; margin: 8px 0; }
+.ml-map table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.ml-map th { text-align: left; font-weight: 500; color: var(--text); padding: 4px 6px 4px 0; }
+.ml-map td { padding: 4px 0; }
+.ml-map td.dim { white-space: nowrap; padding-right: 6px; }
+.ml-map td.acts { display: flex; gap: 4px; justify-content: flex-end; flex-wrap: wrap; }
+.ml-map tr + tr { border-top: 1px solid var(--rule); }
+.box .ml-map button { padding: 3px 8px; font-size: 13px; }
+.box .ml-map button.learning { border-color: var(--amber); color: var(--amber); }
+.ml-map select { font-size: 12px; padding: 2px 4px; }
+
+/* ---------------------------------------------------------------- the tape (tape-ui.js) */
+.tape { background: var(--card); border: 1px solid var(--rule); border-radius: 14px; padding: 14px 16px;
+  display: grid; gap: 12px; min-width: 0; }
+.tape-head { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: baseline; justify-content: space-between; }
+#tape-status { font-size: 13px; }
+.transport, .tape-foot { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; }
+.tape button, .tape .file { font: inherit; font-size: 14px; color: var(--ink); background: var(--well);
+  border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; cursor: pointer; min-height: 36px; }
+.tape button:hover { border-color: var(--faint); }
+.tape button[aria-pressed="true"] { background: var(--amber); border-color: var(--amber); color: #2a1a03; font-weight: 600; }
+.tape button.rec { color: #ff7a6b; }
+.tape button.rec[aria-pressed="true"] { background: #d9483b; border-color: #d9483b; color: #fff; }
+.tape .pos { font: 600 15px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--ink);
+  background: var(--well); border-radius: 8px; padding: 6px 10px; min-width: 9.5em; text-align: center; }
+.tape .bpm { display: flex; align-items: center; gap: 6px; color: var(--dim); font-size: 14px; }
+.tape input[type=number] { width: 5em; font: inherit; font-size: 14px; color: var(--ink); background: var(--well);
+  border: 1px solid var(--line); border-radius: 7px; padding: 5px 6px; }
+.tracks { display: grid; gap: 8px; }
+.tracks .empty { margin: 0; font-size: 14px; }
+.track { display: grid; grid-template-columns: minmax(0, 330px) minmax(0, 1fr); gap: 8px; align-items: stretch;
+  background: var(--well); border-radius: 10px; padding: 6px; }
+.tstrip { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.tstrip .tname { flex: 1 1 120px; min-width: 0; font: inherit; font-size: 14px; color: var(--ink); background: var(--card);
+  border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; }
+.tape .tog, .tape .tacts button { min-height: 32px; min-width: 32px; padding: 2px 8px; font-weight: 600; }
+.tslider { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--dim); }
+.tslider input { width: 72px; accent-color: var(--amber); }
+.tacts { display: flex; gap: 4px; margin-left: auto; }
+.wave { position: relative; min-height: 52px; background: var(--card); border-radius: 6px; overflow: hidden; cursor: pointer; touch-action: none; }
+.wave canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.wave .head { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--ink); opacity: .8; pointer-events: none; }
+.tape-more summary { cursor: pointer; color: var(--dim); font-size: 14px; }
+.tape-more { display: grid; gap: 8px; }
+.tape-more[open] { flex-basis: 100%; }
+.tape-more label { display: flex; align-items: center; gap: 8px; color: var(--dim); font-size: 14px; }
+.tape-more p { margin: 0; font-size: 13px; }
+@media (max-width: 760px) {
+  .track { grid-template-columns: minmax(0, 1fr); }
+  .wave { min-height: 44px; }
+}
+[data-embed] .tape { display: none; }
+
 /* ?embed=1 (main.js): the device and its controls only, for a window on another site */
 .embed-only { display: none; }
 [data-embed] .embed-only { display: inline; margin-left: auto; font-size: 13px; }

@@ -67,6 +67,7 @@ class Fm1 extends AudioWorkletProcessor {
     this.port.onmessage = async (e) => {
       const m = e.data;
       if (m.type === "boot") {
+        this.clock = null;
         const token = ++this.bootToken;
         // Keep the previous (paused) instance until the replacement boots successfully.
         try {
@@ -93,6 +94,7 @@ class Fm1 extends AudioWorkletProcessor {
         else if (m.type === "enc") this.x.fm1_enc(m.enc, m.clicks);
         else if (m.type === "pot") this.x.fm1_pot(m.value);
         else if (m.type === "midi") for (const b of m.bytes) this.x.fm1_midi(b);
+        else if (m.type === "clock") this.setClock(m);                     // the tape's MIDI clock (web/tape.js)
         else if (m.type === "analog") this.x.fm1_analog(m.idx, m.value);   // SMK-37: pads, faders, wheels
         else if (m.type === "vel") this.x.fm1_velocity(m.us);             // SMK-37: the next keys' velocity
       }
@@ -198,11 +200,28 @@ class Fm1 extends AudioWorkletProcessor {
     }
   }
 
+  // MIDI clock into the MIDI IN jack, timed here so it keeps to the audio: Start (or Stop) at
+  // once, then 24 clocks a quarter note at `bpm`, the first with the Start
+  setClock(m) {
+    if (m.run) {
+      if (!this.clock) { this.x.fm1_midi(0xfa); this.clockPhase = 0; }
+      this.clock = { bpm: Math.max(20, Math.min(400, m.bpm || 120)) };
+    } else if (this.clock) {
+      this.clock = null;
+      this.x.fm1_midi(0xfc);
+    }
+  }
+  tickClock(n) {
+    const every = sampleRate * 60 / (this.clock.bpm * 24);
+    for (this.clockPhase -= n; this.clockPhase <= 0; this.clockPhase += every) this.x.fm1_midi(0xf8);
+  }
+
   process(_inputs, outputs) {
     const out = outputs[0];
     const x = this.x;
     if (!x || this.paused) return true;
     const n = out[0].length;
+    if (this.clock) this.tickClock(n);
     const playing = this.playing;       // (the worst quantum: of those once audio played)
     const t0 = now();
     let have;

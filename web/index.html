@@ -59,6 +59,38 @@
         <span class="touch">Play chords with several fingers · drag a knob up / down</span>
         <a class="more" href="#guide">How to use it ↓</a>
       </p>
+
+      <section id="tape" class="tape" aria-labelledby="h-tape">
+        <div class="tape-head">
+          <h2 class="eyebrow" id="h-tape">Tape: record, overdub, mix</h2>
+          <span id="tape-status" class="dim" role="status" aria-live="polite"></span>
+        </div>
+        <div class="transport">
+          <button type="button" id="t-start" aria-label="Back to the start" title="Back to the start">⏮</button>
+          <button type="button" id="t-play" aria-pressed="false">▶ Play</button>
+          <button type="button" id="t-stop">■ Stop</button>
+          <button type="button" id="t-rec" class="rec" aria-pressed="false">● Rec</button>
+          <span id="t-pos" class="pos" aria-label="Position">1.1 · 0:00.0</span>
+          <label class="bpm">BPM <input type="number" id="t-bpm" min="30" max="300" step="1" value="120"></label>
+          <label class="check"><input type="checkbox" id="t-click"> Click</label>
+          <label class="check"><input type="checkbox" id="t-count" checked> Count-in</label>
+          <label class="check" title="Play and Rec send MIDI Start and clock at this tempo into the synth's MIDI in, so a firmware's own sequencer plays in time with the tape (set the firmware to external clock)">
+            <input type="checkbox" id="t-sync"> Clock the firmware</label>
+        </div>
+        <div id="t-tracks" class="tracks"></div>
+        <div class="row tape-foot">
+          <button type="button" id="t-mix">Export mix (.wav)</button>
+          <label class="file">Import audio… <input type="file" id="t-import" accept="audio/*,.wav"></label>
+          <details class="tape-more">
+            <summary>More</summary>
+            <label title="How much earlier a take played live is placed, for the delay between the tape being heard and the synth's answer. Empty: this device's measured output latency. Not applied while the firmware is clocked: its sequencer plays on time.">
+              Latency compensation (ms) <input type="number" id="t-comp" min="0" max="500" step="1"></label>
+            <button type="button" id="t-clear">Delete all tracks…</button>
+            <p class="dim">Tracks are kept in this browser and survive a reload or a firmware change.
+              Export the mix or tracks to keep them elsewhere.</p>
+          </details>
+        </div>
+      </section>
     </div>
 
     <aside class="side bar" aria-label="Firmware, saves and MIDI">
@@ -103,6 +135,16 @@
         <label id="midiin">MIDI in <span class="sel"><span id="midiact" aria-hidden="true"></span><select id="midi" aria-label="MIDI input"><option value="">off</option><option value="*">all inputs</option></select></span></label>
         <label id="midichl" title="Played notes and controllers go to this channel (M-VAVE's firmware listens on 2, Felucca's parts on 1–4)">Channel
           <select id="midich" aria-label="MIDI channel"><option value="0">as sent</option></select></label>
+        <label class="check" title="The controller's knobs and pads turn the FM-1's own knobs and press its buttons, so they work with every firmware. Keys, pitch bend, the mod strip and unmapped knobs still go to MIDI in.">
+          <input type="checkbox" id="ml-on"> Knobs and pads drive the FM-1 panel (MiniLab mkII)</label>
+        <details id="ml-map" class="ml-map">
+          <summary>Controller map</summary>
+          <p class="dim">Set for an Arturia MiniLab mkII on its factory settings (memory 1). Press
+            <b>Learn</b>, then move a knob or hit a pad to use any controller. Knobs are best set to
+            <i>Relative</i> in Arturia's MIDI Control Center: absolute knobs stop at their ends.</p>
+          <table id="ml-table"><tbody></tbody></table>
+          <div class="row"><button type="button" id="ml-reset">Back to the MiniLab factory map</button></div>
+        </details>
       </section>
     </aside>
   </div>
